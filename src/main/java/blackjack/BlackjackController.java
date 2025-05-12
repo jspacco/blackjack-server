@@ -23,15 +23,15 @@ public class BlackjackController {
         this.accountManager = accountManager;
     }
 
-    // ✅ Start or resume most recent session
-    @Operation(summary = "Start", description = "Start a new game, or resume the most recent session")
+    // ✅ Start a new session
+    @Operation(summary = "Start", description = "Start a new game")
     @PostMapping("/start")
     public GameStateDTO start(@RequestParam String username, @RequestParam String password) 
     {
         System.out.println("Starting session for user: " + username);
         authenticate(username, password);
         System.out.println("Authenticated user: " + username);
-        BlackjackSession session = manager.createOrResumeSession(username);
+        BlackjackSession session = manager.createNewSession(username);
         GameStateDTO dto = GameStateDTO.from(session);
         System.out.println(dto);
         return dto;
@@ -148,7 +148,7 @@ public class BlackjackController {
         }
 
         BlackjackSession session = BlackjackSession.fromEntity(archived); // reconstructs in-memory session
-        manager.reactivateSession(session); // puts it into active map
+        manager.resumeSession(session); // puts it into active map
         if (session.getPhase() == GamePhase.RESOLVED) {
             session.reset();
         }

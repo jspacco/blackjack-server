@@ -17,13 +17,8 @@ public class SessionManager {
         this.repository = repository;
     }
 
-    public BlackjackSession createOrResumeSession(String username) {
-        UUID existingId = userToSession.get(username);
-
-        if (existingId != null && activeSessions.containsKey(existingId)) {
-            return activeSessions.get(existingId);
-        }
-
+    private BlackjackSession newSession(String username)
+    {
         UUID newId = UUID.randomUUID();
         Deck deck = new Deck();
         deck.shuffle(random);
@@ -33,6 +28,25 @@ public class SessionManager {
         userToSession.put(username, newId);
 
         return session;
+    }
+
+    public BlackjackSession createNewSession(String username) {
+        // if they have a current session, save it and create a new one
+        UUID existingId = userToSession.get(username);
+        if (existingId != null && activeSessions.containsKey(existingId)) {
+            archiveSession(existingId);
+        }
+        return newSession(username);
+    }
+
+    public BlackjackSession createOrResumeSession(String username) {
+        UUID existingId = userToSession.get(username);
+
+        if (existingId != null && activeSessions.containsKey(existingId)) {
+            return activeSessions.get(existingId);
+        }
+
+        return newSession(username);
     }
 
     public Optional<BlackjackSession> getSession(UUID id) {
@@ -69,7 +83,7 @@ public class SessionManager {
         return repository.findById(id);
     }
     
-    public void reactivateSession(BlackjackSession session) {
+    public void resumeSession(BlackjackSession session) {
         UUID id = session.getId();
         activeSessions.put(id, session);
         userToSession.put(session.getUsername(), id);
