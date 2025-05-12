@@ -83,8 +83,9 @@ public class BlackjackController {
                               @RequestParam String password) 
     {
         authenticate(id, username, password);
-        manager.resetSession(id);
-        return GameStateDTO.from(manager.getSession(id).orElseThrow());
+        BlackjackSession session = manager.getSession(id).orElseThrow();
+        session.reset();
+        return GameStateDTO.from(session);
     }
 
     // ✅ Check current state of a session

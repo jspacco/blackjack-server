@@ -236,5 +236,13 @@ public class BlackjackSession {
     public int getNumCardsRemaining() {
         return deck.cardsRemaining();
     }
+
+    public boolean isPlayerBlackjack() {
+        return playerHand.isBlackjack();
+    }
+
+    public boolean isDealerBlackjack() {
+        return dealerHand.isBlackjack();
+    }
 }
 

@@ -17,13 +17,14 @@ public record GameStateDTO(
     boolean canStand,
     boolean gameOver,
     int cardsRemaining,
-    boolean reShuffled
+    boolean reshuffled
 ) {
     
     public static GameStateDTO from(BlackjackSession s) {
         boolean hideDealer = s.getPhase() == GamePhase.PLAYER_TURN;
+        boolean reshuffled = s.consumeReshuffledFlag();
 
-        return new GameStateDTO(
+        GameStateDTO dto = new GameStateDTO(
             s.getId(),
             s.getPlayerHand().getCards().stream().map(Card::toString).toList(),
             s.getPlayerHand().value(),
@@ -39,7 +40,9 @@ public record GameStateDTO(
             !s.isGameOver() && s.getPhase() == GamePhase.PLAYER_TURN,
             s.isGameOver(),
             s.getNumCardsRemaining(),
-            s.consumeReshuffledFlag()
+            reshuffled
         );
+
+        return dto;
     }
 }
